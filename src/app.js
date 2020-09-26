@@ -7,7 +7,7 @@ const {
     NODE_ENV
 } = require('./config')
 const errorHandler = require('./middleware/error-handler')
-const pancakeRouter = require('./pancake/pancake-router')
+const habitRouter = require('./habit/habit-router')
 
 const app = express()
 
@@ -23,7 +23,7 @@ app.use(helmet())
 
 app.use(express.static('public'))
 
-app.use('/api/pancakes', pancakeRouter)
+app.use('/api/habit', habitRouter)
 app.use(errorHandler)
 
 module.exports = app

@@ -1,100 +1,100 @@
 const path = require('path')
 const express = require('express')
 const xss = require('xss')
-const HabitualHabitsService = require('./habitual_habits-service')
-
-const HabitualHabitsRouter = express.Router()
+const habitService = require('./habit-service')
+const habitRouter = express.Router()
 const jsonParser = express.json()
 
 const serializeHabit = habit => ({
     id: habit.id,
-    title: xss(habit.title),
-    completed: pancake.completed
+    category_id: xss(habit.category_id),
+    habit_name: habit.name,
+    habit_description: habit.habit_description,
+    is_deleted: habit.is_deleted,
+    date_created: habit.date_created
 })
 
-pancakeRouter
+habitRouter
     .route('/')
     //relevant
     .get((req, res, next) => {
         const knexInstance = req.app.get('db')
-        PancakeService.getPancakes(knexInstance)
-            .then(pancakes => {
-                res.json(pancakes.map(serializePancake))
+        habitService.getHabits(knexInstance)
+            .then(habits => {
+                res.json(habits.map(serializeHabit))
             })
             .catch(next)
     })
     //relevant
     .post(jsonParser, (req, res, next) => {
         const {
-            title,
-            completed = false
-        } = req.body
-        const newPancake = {
-            title
+            habit_name,
+            } = req.body
+        const newHabit = {
+            habit_name
         }
 
-        for (const [key, value] of Object.entries(newPancake))
+        for (const [key, value] of Object.entries(newHabit))
             if (value == null)
                 return res.status(400).json({
                     error: {
                         message: `Missing '${key}' in request body`
                     }
                 })
-
-        newPancake.completed = completed;
-
-        PancakeService.insertPancake(
+        habitervice.insertHabit(
                 req.app.get('db'),
-                newPancake
+                newHabit
             )
-            .then(pancake => {
+            .then(habit => {
                 res
                     .status(201)
-                    .location(path.posix.join(req.originalUrl, `/${pancake.id}`))
-                    .json(serializePancake(pancake))
+                    .location(path.posix.join(req.originalUrl, `/${habit.id}`))
+                    .json(serializeHabit(habit))
             })
             .catch(next)
     })
 
-pancakeRouter
-    .route('/:pancake_id')
+habitRouter
+    .route('/:habit_id')
     .all((req, res, next) => {
-        if (isNaN(parseInt(req.params.pancake_id))) {
+        if (isNaN(parseInt(req.params.habit_id))) {
             return res.status(404).json({
                 error: {
                     message: `Invalid id`
                 }
             })
         }
-        PancakeService.getPancakeById(
+        habitService.getHabitById(
                 req.app.get('db'),
-                req.params.pancake_id
+                req.params.habit_id
             )
-            .then(pancake => {
-                if (!pancake) {
+            .then(habit => {
+                if (!habit) {
                     return res.status(404).json({
                         error: {
-                            message: `Pancake doesn't exist`
+                            message: `Habit doesn't exist`
                         }
                     })
                 }
-                res.pancake = pancake
+                res.habit = habit
                 next()
             })
             .catch(next)
     })
     .get((req, res, next) => {
-        res.json(serializePancake(res.pancake))
+        res.json(serializeHabit(res.habit))
     })
     //relevant
     .patch(jsonParser, (req, res, next) => {
         const {
-            title,
-            completed
+            habit_name,
+            finished,
+            habit_description,
         } = req.body
-        const pancakeToUpdate = {
-            title,
-            completed
+        const habitToUpdate = {
+            habit_name,
+            finished,
+            habit_description
         }
 
         const numberOfValues = Object.values(pancakeToUpdate).filter(Boolean).length
@@ -105,21 +105,21 @@ pancakeRouter
                 }
             })
 
-        PancakeService.updatePancake(
+        habitService.updateHabit(
                 req.app.get('db'),
-                req.params.pancake_id,
-                pancakeToUpdate
+                req.params.habit_id,
+                habitToUpdate
             )
-            .then(updatedPancake => {
-                res.status(200).json(serializePancake(updatedPancake[0]))
+            .then(updatedHabit => {
+                res.status(200).json(serializeHabit(updatedHabit[0]))
             })
             .catch(next)
     })
     //relevant
     .delete((req, res, next) => {
-        PancakeService.deletePancake(
+        habitService.deleteHabit(
                 req.app.get('db'),
-                req.params.pancake_id
+                req.params.habit_id
             )
             .then(numRowsAffected => {
                 res.status(204).end()
@@ -128,4 +128,4 @@ pancakeRouter
     })
 
 
-module.exports = pancakeRouter
+module.exports = habitRouter

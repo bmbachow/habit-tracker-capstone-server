@@ -12,7 +12,9 @@ CREATE TABLE categories (
     user_id INTEGER
         REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     category_name VARCHAR (255) NOT NULL,
-    is_deleted INTEGER NOT NULL DEFAULT 0
+    category_description VARCHAR (255),
+    is_deleted INTEGER NOT NULL DEFAULT 0,
+    date_created TIMESTAMP DEFAULT now() NOT NULL
 );
 
 CREATE TABLE habits (
@@ -20,7 +22,8 @@ CREATE TABLE habits (
     category_id INTEGER
         REFERENCES categories(id) ON DELETE CASCADE NOT NULL,
     habit_name VARCHAR (255) NOT NULL,
-    finished INTEGER NOT NULL,
+    habit_description VARCHAR (5000),
+    is_deleted INTEGER NOT NULL DEFAULT 0,
     date_created TIMESTAMP DEFAULT now() NOT NULL
 );
 
