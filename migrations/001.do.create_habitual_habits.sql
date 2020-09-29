@@ -22,7 +22,7 @@ CREATE TABLE habits (
     category_id INTEGER
         REFERENCES categories(id) ON DELETE CASCADE NOT NULL,
     habit_name VARCHAR (255) NOT NULL,
-    habit_description VARCHAR (5000),
+    habit_description VARCHAR (255),
     is_deleted INTEGER NOT NULL DEFAULT 0,
     date_created TIMESTAMP DEFAULT now() NOT NULL
 );

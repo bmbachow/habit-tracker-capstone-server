@@ -1,98 +1,98 @@
 const path = require('path')
 const express = require('express')
 const xss = require('xss')
-const habitService = require('./habit-service')
-const habitRouter = express.Router()
+const categoryService = require('./category-service')
+const categoryRouter = express.Router()
 const jsonParser = express.json()
 
-const serializeHabit = habit => ({
-    id: habit.id,
-    category_id: xss(habit.category_id),
-    habit_name: habit.habit_name,
-    habit_description: habit.habit_description,
-    is_deleted: habit.is_deleted,
-    date_created: habit.date_created
+const serializeCategory = category => ({
+    id: category.id,
+    user_id: xss(category.user_id),
+    category_name: category.category_name,
+    category_description: category.category_description,
+    is_deleted: category.is_deleted,
+    date_created: category.date_created
 })
 
-habitRouter
+categoryRouter
     .route('/')
     //relevant
     .get((req, res, next) => {
         const knexInstance = req.app.get('db')
-        habitService.getHabits(knexInstance)
-            .then(habits => {
-                res.json(habits.map(serializeHabit))
+        categoryService.getCategories(knexInstance)
+            .then(categories => {
+                res.json(categories.map(serializeCategory))
             })
             .catch(next)
     })
     //relevant
     .post(jsonParser, (req, res, next) => {
         const {
-            habit_name,
+            category_name,
             } = req.body
-        const newHabit = {
-            habit_name
+        const newCategory = {
+            category_name
         }
 
-        for (const [key, value] of Object.entries(newHabit))
+        for (const [key, value] of Object.entries(newCategory))
             if (value == null)
                 return res.status(400).json({
                     error: {
                         message: `Missing '${key}' in request body`
                     }
                 })
-        habitService.insertHabit(
+        categoryService.insertCategory(
                 req.app.get('db'),
-                newHabit
+                newCategory
             )
-            .then(habit => {
+            .then(category => {
                 res
                     .status(201)
-                    .location(path.posix.join(req.originalUrl, `/${habit.id}`))
-                    .json(serializeHabit(habit))
+                    .location(path.posix.join(req.originalUrl, `/${category.id}`))
+                    .json(serializeCategory(category))
             })
             .catch(next)
     })
 
-habitRouter
-    .route('/:habit_id')
+categoryRouter
+    .route('/:category_id')
     .all((req, res, next) => {
-        if (isNaN(parseInt(req.params.habit_id))) {
+        if (isNaN(parseInt(req.params.category_id))) {
             return res.status(404).json({
                 error: {
                     message: `Invalid id`
                 }
             })
         }
-        habitService.getHabitById(
+        categoryService.getCategoryById(
                 req.app.get('db'),
-                req.params.habit_id
+                req.params.category_id
             )
-            .then(habit => {
-                if (!habit) {
+            .then(category => {
+                if (!category) {
                     return res.status(404).json({
                         error: {
-                            message: `Habit doesn't exist`
+                            message: `Category doesn't exist`
                         }
                     })
                 }
-                res.habit = habit
+                res.category = category
                 next()
             })
             .catch(next)
     })
     .get((req, res, next) => {
-        res.json(serializeHabit(res.habit))
+        res.json(serializeCategory(res.category))
     })
     //relevant
     .patch(jsonParser, (req, res, next) => {
         const {
-            habit_name,
-            habit_description,
+            category_name,
+            category_description,
         } = req.body
-        const habitToUpdate = {
-            habit_name,
-            habit_description
+        const categoryToUpdate = {
+            category_name,
+            category_description
         }
 
         const numberOfValues = Object.values(pancakeToUpdate).filter(Boolean).length
@@ -103,21 +103,21 @@ habitRouter
                 }
             })
 
-        habitService.updateHabit(
+        categoryService.updateCategory(
                 req.app.get('db'),
-                req.params.habit_id,
-                habitToUpdate
+                req.params.category_id,
+                categoryToUpdate
             )
-            .then(updatedHabit => {
-                res.status(200).json(serializeHabit(updatedHabit[0]))
+            .then(updatedCategory => {
+                res.status(200).json(serializeCategory(updatedCategory[0]))
             })
             .catch(next)
     })
     //relevant
     .delete((req, res, next) => {
-        habitService.deleteHabit(
+        categoryService.deleteCategory(
                 req.app.get('db'),
-                req.params.habit_id
+                req.params.category_id
             )
             .then(numRowsAffected => {
                 res.status(204).end()
@@ -126,4 +126,4 @@ habitRouter
     })
 
 
-module.exports = habitRouter
+module.exports = categoryRouter
