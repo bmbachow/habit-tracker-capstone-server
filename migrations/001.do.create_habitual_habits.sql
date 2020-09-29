@@ -4,7 +4,7 @@ CREATE TABLE users (
     password VARCHAR (225) NOT NULL,
     first_name VARCHAR (225) NOT NULL,
     last_name VARCHAR (225) NOT NULL,
-    nick_name VARCHAR (225) NOT NULL
+    is_deleted INTEGER NOT NULL DEFAULT 0,
 );
 
 CREATE TABLE categories (
