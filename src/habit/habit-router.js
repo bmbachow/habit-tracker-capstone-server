@@ -7,9 +7,9 @@ const jsonParser = express.json()
 
 const serializeHabit = habit => ({
     id: habit.id,
-    category_id: xss(habit.category_id),
-    habit_name: habit.habit_name,
-    habit_description: habit.habit_description,
+    category_id:habit.category_id,
+    habit_name: xss(habit.habit_name),
+    habit_description: xss(habit.habit_description),
     is_deleted: habit.is_deleted,
     date_created: habit.date_created
 })
@@ -29,9 +29,15 @@ habitRouter
     .post(jsonParser, (req, res, next) => {
         const {
             habit_name,
+            category_id,
+            habit_description,
+            is_deleted
             } = req.body
         const newHabit = {
-            habit_name
+            habit_name,
+            category_id,
+            habit_description,
+            is_deleted
         }
 
         for (const [key, value] of Object.entries(newHabit))
@@ -88,11 +94,15 @@ habitRouter
     .patch(jsonParser, (req, res, next) => {
         const {
             habit_name,
+            category_id,
             habit_description,
+            is_deleted
         } = req.body
         const habitToUpdate = {
             habit_name,
-            habit_description
+            category_id,
+            habit_description,
+            is_deleted
         }
 
         const numberOfValues = Object.values(pancakeToUpdate).filter(Boolean).length

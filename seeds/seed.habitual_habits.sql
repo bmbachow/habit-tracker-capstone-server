@@ -16,4 +16,4 @@ INSERT INTO habits (category_id, habit_name, habit_description, date_created) VA
     ('1', 'Vitamins', 'Take all of my vitamins and medication', '2020-09-25'),
     ('1', 'Veggies', 'Eat 2 servings of vegetables', '2020-09-25'),
     ('2', 'Awake by 8AM', 'Get up and out of bed by 8AM', '2020-09-25'),
-    ('3', 'Eat 6 eggs', '', '2020-09-26')
+    ('3', 'Eat 6 eggs', NULL, '2020-09-26');

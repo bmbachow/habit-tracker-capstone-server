@@ -8,6 +8,8 @@ const {
 } = require('./config')
 const errorHandler = require('./middleware/error-handler')
 const habitRouter = require('./habit/habit-router')
+const categoryRouter = require('./category/category-router')
+const authRouter = require('./auth/auth-router')
 
 const app = express()
 
@@ -24,6 +26,8 @@ app.use(helmet())
 app.use(express.static('public'))
 
 app.use('/api/habit', habitRouter)
+app.use('/api/category', categoryRouter)
+app.use('/api/auth', authRouter)
 app.use(errorHandler)
 
 module.exports = app

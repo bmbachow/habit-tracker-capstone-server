@@ -3,16 +3,12 @@ const habitService = {
     getHabits(db) {
         return db
             .from('habits')
-            .select(
-                'habits.id',
-            )
+            .select('*')
     },
     getHabitById(db, habit_id) {
         return db
             .from('habits')
-            .select(
-                'habits.id',
-            )
+            .select('*')
             .where('habits.id', habit_id)
             .first()
     },

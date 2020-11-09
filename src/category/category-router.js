@@ -28,10 +28,16 @@ categoryRouter
     //relevant
     .post(jsonParser, (req, res, next) => {
         const {
+            user_id,
             category_name,
-            } = req.body
+            category_description,
+            is_deleted
+        } = req.body
         const newCategory = {
-            category_name
+            user_id,
+            category_name,
+            category_description,
+            is_deleted
         }
 
         for (const [key, value] of Object.entries(newCategory))
@@ -42,9 +48,9 @@ categoryRouter
                     }
                 })
         categoryService.insertCategory(
-                req.app.get('db'),
-                newCategory
-            )
+            req.app.get('db'),
+            newCategory
+        )
             .then(category => {
                 res
                     .status(201)
@@ -65,9 +71,9 @@ categoryRouter
             })
         }
         categoryService.getCategoryById(
-                req.app.get('db'),
-                req.params.category_id
-            )
+            req.app.get('db'),
+            req.params.category_id
+        )
             .then(category => {
                 if (!category) {
                     return res.status(404).json({
@@ -87,27 +93,29 @@ categoryRouter
     //relevant
     .patch(jsonParser, (req, res, next) => {
         const {
+            user_id,
             category_name,
-            category_description,
+            category_description
         } = req.body
         const categoryToUpdate = {
+            user_id,
             category_name,
             category_description
         }
 
-        const numberOfValues = Object.values(pancakeToUpdate).filter(Boolean).length
+        const numberOfValues = Object.values(categoryToUpdate).filter(Boolean).length
         if (numberOfValues === 0)
             return res.status(400).json({
                 error: {
-                    message: `Request body must content either 'title' or 'completed'`
+                    message: `Request body must contain a user id, category name, or category description`
                 }
             })
 
         categoryService.updateCategory(
-                req.app.get('db'),
-                req.params.category_id,
-                categoryToUpdate
-            )
+            req.app.get('db'),
+            req.params.category_id,
+            categoryToUpdate
+        )
             .then(updatedCategory => {
                 res.status(200).json(serializeCategory(updatedCategory[0]))
             })
@@ -116,9 +124,9 @@ categoryRouter
     //relevant
     .delete((req, res, next) => {
         categoryService.deleteCategory(
-                req.app.get('db'),
-                req.params.category_id
-            )
+            req.app.get('db'),
+            req.params.category_id
+        )
             .then(numRowsAffected => {
                 res.status(204).end()
             })
