@@ -133,5 +133,25 @@ categoryRouter
             .catch(next)
     })
 
+categoryRouter
+    .route('/user/:user_id')
+    .all((req,res,next) => {
+        categoryService.getCategoriesByUserId(
+            req.app.get('db'),
+            req.params.user_id
+        )
+        .then(categories => {
+            if (!categories){
+                return res.status(404).json({
+                    error: {
+                        message: `user_id doesn't exist`
+                    }
+                })
+            }
+            res.json(categories)
+            next()
+        })
+        .catch(next)
+    })
 
 module.exports = categoryRouter

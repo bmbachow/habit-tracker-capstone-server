@@ -12,6 +12,12 @@ const categoryService = {
             .where('categories.id', category_id)
             .first()
     },
+    getCategoriesByUserId(db, user_id){
+        return db
+            .from('categories')
+            .select('*')
+            .where('user_id', user_id)
+    },
     //relevant
     insertCategory(db, newCategory) {
         return db
