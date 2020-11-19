@@ -9,16 +9,10 @@ authRouter
         const {
             userName,
             password,
-            first_name,
-            last_name,
-            is_deleted
         } = req.body
         const loginUser = {
             userName,
             password,
-            first_name,
-            last_name,
-            is_deleted
 
         }
 
