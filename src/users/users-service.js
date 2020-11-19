@@ -2,13 +2,6 @@ const xss = require('xss')
 const bcrypt = require('bcryptjs')
 
 const UsersService = {
-    serializeUser(user) {
-        // console.log(user)
-        return {
-            id: user.id,
-            user_name: xss(user.user_name),
-        }
-    },
     getAllUsers(knex) {
         return knex.select('*').from('users')
     },
@@ -26,6 +19,7 @@ const UsersService = {
             .then(([user]) => user)
     },
     validatePassword(password) {
+        console.log(password, ': password in the service');
         if (password.length < 6) {
             return 'Password must be longer than 6 characters'
         }

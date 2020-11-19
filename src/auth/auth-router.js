@@ -8,11 +8,18 @@ authRouter
 
         const {
             userName,
-            password
+            password,
+            first_name,
+            last_name,
+            is_deleted
         } = req.body
         const loginUser = {
             userName,
-            password
+            password,
+            first_name,
+            last_name,
+            is_deleted
+
         }
 
         for (const [key, value] of Object.entries(loginUser))

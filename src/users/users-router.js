@@ -1,9 +1,17 @@
 const express = require('express')
 const path = require('path')
+const xss = require('xss')
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
 const UsersService = require('./users-service')
 
+const serializeUser = user => ({
+    id: user.id,
+    user_name: xss(user.user_name),
+    password: xss(user.password),
+    first_name: xss(user.first_name),
+    last_name: xss(user.last_name)
+})
 
 // All users
 usersRouter
@@ -18,16 +26,16 @@ usersRouter
     })
     //register new user
     .post(jsonBodyParser, (req, res, next) => {
-        const { user_name, password } = req.body
+        const { user_name, password, first_name, last_name} = req.body
 
-        console.log("user_name:", user_name, "password:", password);
+        console.log("user_name:", user_name, "password:", password, "<----");
 
-        for (const field of ['user_name', 'password'])
+        for (const field of ['user_name', 'password', 'first_name', 'last_name'])
             if (!req.body[field])
                 return res.status(400).json({
                     error: `Missing '${field}' in request body`
                 })
-        const passwordError = UsersService.validatePassword(password)
+        const passwordError = UsersService.validatePassword(password.trim())
 
         console.log("password error:", passwordError);
 
@@ -51,6 +59,8 @@ usersRouter
                         const newUser = {
                             user_name,
                             password: hashedPassword,
+                            first_name,
+                            last_name
                         }
                         return UsersService.insertUser(
                             req.app.get('db'),
@@ -61,7 +71,7 @@ usersRouter
                                 res
                                     .status(201)
                                     .location(path.posix.join(req.originalUrl, `/${user.id}`))
-                                    .json(UsersService.serializeUser(user))
+                                    .json(serializeUser(user))
                             })
                     })
             })
@@ -86,7 +96,7 @@ usersRouter
             .catch(next)
     })
     .get((req, res) => {
-        res.json(UsersService.serializeUser(res.user))
+        res.json(serializeUser(res.user))
     })
     .delete((req, res, next) => {
         const { user_id } = req.params;
