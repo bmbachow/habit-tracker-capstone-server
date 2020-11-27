@@ -2,10 +2,18 @@ const xss = require('xss')
 const bcrypt = require('bcryptjs')
 
 const UsersService = {
+    serializeUser(user) {
+        // console.log(user)
+        return {
+            id: user.id,
+            user_name: xss(user.user_name),
+        }
+    },
     getAllUsers(knex) {
         return knex.select('*').from('users')
     },
     hasUserWithUserName(db, user_name) {
+        console.log('user name=>', user_name)
         return db('users')
             .where({ user_name })
             .first()
@@ -18,26 +26,32 @@ const UsersService = {
             .returning('*')
             .then(([user]) => user)
     },
-    validatePassword(password) {
-        console.log(password, ': password in the service');
-        if (password.length < 6) {
+    validatePassword(user_password) {
+        // console.log("password =>", user_password)
+        if (user_password.length < 6) {
             return 'Password must be longer than 6 characters'
         }
-        if (password.length > 72) {
+        if (user_password.length > 72) {
             return 'Password must be less than 72 characters'
         }
-        if (password.startsWith(' ') || password.endsWith(' ')) {
+        if (user_password.startsWith(' ') || user_password.endsWith(' ')) {
             return 'Password must not start or end with empty spaces'
         }
     },
-    hashPassword(password) {
-        return bcrypt.hash(password, 12)
+    hashPassword(user_password) {
+        return bcrypt.hash(user_password, 12)
     },
     deleteUser(knex, id) {
         return knex('users')
             .where({ id })
             .delete()
     },
+
+    deleteAllUsers(knex,id) {
+        return knex('users')
+            .delete()
+    },
+
     getById(knex, id) {
         return knex
             .from('users')

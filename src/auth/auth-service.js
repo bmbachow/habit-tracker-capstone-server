@@ -1,21 +1,21 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const xss = require("xss");
-const config = require("../../config");
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const config = require('../config')
 
 const AuthService = {
     getUserWithUserName(db, user_name) {
+        console.log('authServivce:', user_name)
         return db('users')
-            .where({ user_name })
+            .where( 'user_name', user_name )
             .first()
     },
-    comparePasswords(password, hash) {
-        return bcrypt.compare(password, hash)
+    comparePasswords(user_password, hash) {
+        console.log(user_password, hash)
+        return bcrypt.compare(user_password, hash)
     },
     createJwt(subject, payload) {
         return jwt.sign(payload, config.JWT_SECRET, {
             subject,
-            expiresIn: config.JWT_EXPIRY,
             algorithm: 'HS256',
         })
     },
@@ -30,15 +30,6 @@ const AuthService = {
             .toString()
             .split(':')
     },
-    serializeUser(user) {
-        return {
-            id: user.id,
-            user_name: xss(user.user_name),
-            password: xss(user.password),
-            first_name: xss(user.first_name),
-            last_name: xss(user.last_name)
-        };
-    }
 }
 
 module.exports = AuthService

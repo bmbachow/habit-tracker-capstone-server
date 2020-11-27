@@ -1,44 +1,31 @@
 const express = require('express')
 const path = require('path')
-const xss = require('xss')
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
 const UsersService = require('./users-service')
 
-const serializeUser = user => ({
-    id: user.id,
-    user_name: xss(user.user_name),
-    password: xss(user.password),
-    first_name: xss(user.first_name),
-    last_name: xss(user.last_name)
-})
 
 // All users
 usersRouter
     .route('/')
     .get((req, res, next) => {
         UsersService.getAllUsers(req.app.get('db'))
-            .then(user => {
-                console.log('User:', user)
-                res.json(user)
-            })
-            .catch(next)
+        .then(user => {
+            res.json(user)
+        })
+        .catch(next)
     })
-    //register new user
     .post(jsonBodyParser, (req, res, next) => {
-        const { user_name, password, first_name, last_name} = req.body
+        const { user_name, user_email, user_password } = req.body
+        console.log('logging data=>',user_name, user_email, user_password)
 
-        console.log("user_name:", user_name, "password:", password, "<----");
-
-        for (const field of ['user_name', 'password', 'first_name', 'last_name'])
+        for (const field of ['user_name','user_email', 'user_password'])
             if (!req.body[field])
                 return res.status(400).json({
                     error: `Missing '${field}' in request body`
                 })
-        const passwordError = UsersService.validatePassword(password.trim())
-
-        console.log("password error:", passwordError);
-
+        const passwordError = UsersService.validatePassword(user_password)
+                console.log("pass error=>",passwordError)
         if (passwordError)
             return res.status(400).json({ error: passwordError })
 
@@ -53,14 +40,13 @@ usersRouter
                 if (hasUserWithUserName)
                     return res.status(400).json({ error: `Username already taken` })
 
-                return UsersService.hashPassword(password)
+                return UsersService.hashPassword(user_password)
                     .then(hashedPassword => {
-                        console.log("hashedpassword", hashedPassword);
+                        console.log("hashedpassword",hashedPassword);
                         const newUser = {
                             user_name,
-                            password: hashedPassword,
-                            first_name,
-                            last_name
+                            user_email,
+                            user_password: hashedPassword,
                         }
                         return UsersService.insertUser(
                             req.app.get('db'),
@@ -71,7 +57,7 @@ usersRouter
                                 res
                                     .status(201)
                                     .location(path.posix.join(req.originalUrl, `/${user.id}`))
-                                    .json(serializeUser(user))
+                                    .json(UsersService.serializeUser(user))
                             })
                     })
             })
@@ -96,7 +82,7 @@ usersRouter
             .catch(next)
     })
     .get((req, res) => {
-        res.json(serializeUser(res.user))
+        res.json(UsersService.serializeUser(res.user))
     })
     .delete((req, res, next) => {
         const { user_id } = req.params;
