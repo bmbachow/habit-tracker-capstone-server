@@ -1,17 +1,18 @@
 {
-  "name": "express-boilerplate",
+  "name": "habitual-habits",
   "version": "1.0.0",
-  "description": "",
+  "description": "api server for habit-tracker-capstone-client",
   "main": "index.js",
   "scripts": {
     "test": "mocha --require test/setup.js --watch",
     "dev": "nodemon src/server.js",
     "migrate": "postgrator --config postgrator-config.js",
     "migrate:test": "env NODE_ENV=test npm run migrate",
-    "migrate:production": "env SSL=true DATABASE_URL=$(heroku config:get DATABASE_URL) npm run migrate",
+    "migrate:production": "heroku run npm run migrate",
     "start": "nodemon src/server.js",
     "predeploy": "npm audit",
-    "deploy": "git push heroku master"
+    "deploy": "git push heroku master",
+    "postdeploy": "npm run migrate:production"
   },
   "keywords": [],
   "author": "",
@@ -23,13 +24,14 @@
     "eslint": "^6.6.0",
     "express": "^4.17.1",
     "helmet": "^3.22.0",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.3",
     "morgan": "^1.9.1",
     "path": "^0.12.7",
     "pg": "^7.14.0",
     "postgrator": "^3.10.2",
+    "postgrator-cli": "^3.2.0",
     "uuidv4": "^6.2.4",
     "winston": "^3.2.1",
     "xss": "^1.0.6"
