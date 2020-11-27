@@ -22,8 +22,9 @@ usersRouter
         for (const field of ['user_name','user_email', 'user_password'])
             if (!req.body[field])
                 return res.status(400).json({
-                    error: `Missing '${field}' in request body`
-                })
+                    error: {
+                        message: `Missing '${field}' in request body`
+                    }})
         const passwordError = UsersService.validatePassword(user_password)
                 console.log("pass error=>",passwordError)
         if (passwordError)
