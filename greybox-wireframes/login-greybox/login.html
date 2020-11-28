@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up Page</title>
+        <link rel="stylesheet" href="../../greybox-wireframes/post-landing-page.css"/>
+      </head>
+
+  <body>
+    <main role="main">
+      <header role="banner">
+        <h1>Log In</h1>
+      </header>
+      <section>
+        <form className='login-form'>
+            <div>
+              <label htmlFor="username">Username</label>
+              <input placeholder='username' type="text" name='username' id='username'/>
+            </div>
+            <p className="required">please enter your username</p>
+            <p className="required">username does not exist</p>
+            <div>
+              <label htmlFor="password">Password</label>
+              <input type="password" name='password' id='password'/>
+            </div>
+            <p className="required">please enter your password</p>
+            <p className="required">incorrect password; please try again</p>
+            <button type='submit'>Log In</button>
+        </form>
+      </section>
+    </main>
+  </body>
+
+</html>
